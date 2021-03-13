@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "Part 1",
+      "setup": "",
+      "run": "make testPartOne",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 20
+    },
+    {
+      "name": "Part 2",
+      "setup": "",
+      "run": "make testPartTwo",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 20
+    },
+    {
+      "name": "Part 3",
+      "setup": "",
+      "run": "make testPartThree",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 30
+    },
+    {
+      "name": "Part 4",
+      "setup": "",
+      "run": "make testPartFour",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 30
+    }
+  ]
+}
