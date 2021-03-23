@@ -1,0 +1,8 @@
+//
+// Created by saudbaig on 3/22/21.
+//
+
+#ifndef PROJECTTEMPLATE_FILEREADER_H
+#define PROJECTTEMPLATE_FILEREADER_H
+
+#endif //PROJECTTEMPLATE_FILEREADER_H
