@@ -5,6 +5,7 @@
 #define INC_21S_CS3377_PROJECT_FILEREADER_H
 #include <cstdio>
 #include <ctime>
+#include "Util.h"
 
 class FileReader {
 
@@ -18,11 +19,14 @@ public:
     void setFd(int fd);
     int getNumEntries() const;
     void setNumEntries(int numEntries);
+    void populateEntries();
+    void printEntries();
     ~FileReader();
 
 private:
     int fd;
     int numEntries;
+    EntryInfo* entries;
 
 };
 #endif //PROJECTTEMPLATE_FILEREADER_H
