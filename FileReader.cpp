@@ -20,7 +20,7 @@ FileReader::FileReader(const char *source) {
     FileReader::entries = new EntryInfo[numEntries];
     //alloc memory to array's structs' char pointers
     for(int i=0; i<numEntries; i++) {
-        this->entries[i].itemName = new char(50);
+        this->entries[i].itemName = new char[50];
     }
 }
 
@@ -48,34 +48,25 @@ void FileReader::populateEntries() {
         this->readInt(&(this->entries[i].quantity));
         this->readFloat(&(this->entries[i].price));
     }
-    return;
+    close(FileReader::fd);
 }
 
 void FileReader::printEntries() {
-    for(int i =0; i<=4 ; i++) {
+    for(int i =0; i<numEntries; i++) {
         cout << "Time: " << this->entries[i].timestamp;
         cout << ", ID: " << this->entries[i].itemID;
         cout << ", Name: " << this->entries[i].itemName;
         cout << ", Qty: " << this->entries[i].quantity;
         cout << ", Price: " << this->entries[i].price << endl;
     }
-    return;
 }
 
 FileReader::~FileReader() {
     for(int i=0; i<numEntries; i++) {
-        //delete (this->entries[i].itemName);
+        delete (this->entries[i].itemName);
     }
-
-    //delete (this->entries[0].itemName);
-
-    //cout << "Deleting 1: ";
-    //delete (this->entries[1].itemName);
-
-    //delete (this->entries[2].itemName);
-
     delete[] FileReader::entries;
-    close(FileReader::fd);
+
 }
 
 int FileReader::getFd() const {
