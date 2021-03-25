@@ -18,9 +18,10 @@ FileReader::FileReader(const char *source) {
     FileReader::fd = open(source, O_RDONLY, S_IRUSR);
     readInt(&(FileReader::numEntries));
     FileReader::entries = new EntryInfo[numEntries];
-//    for(int i=0; i<numEntries; i++) {
-//        entries[0].itemName = new char(50);
-//    }
+    //alloc memory to array's structs' char pointers
+    for(int i=0; i<numEntries; i++) {
+        this->entries[i].itemName = new char(50);
+    }
 }
 
 void FileReader::readInt(int* buffer) {
@@ -47,24 +48,31 @@ void FileReader::populateEntries() {
         this->readInt(&(this->entries[i].quantity));
         this->readFloat(&(this->entries[i].price));
     }
+    return;
 }
 
 void FileReader::printEntries() {
-    for(int i =0; i< this->numEntries; i++) {
+    for(int i =0; i<=4 ; i++) {
         cout << "Time: " << this->entries[i].timestamp;
         cout << ", ID: " << this->entries[i].itemID;
         cout << ", Name: " << this->entries[i].itemName;
         cout << ", Qty: " << this->entries[i].quantity;
         cout << ", Price: " << this->entries[i].price << endl;
     }
+    return;
 }
 
 FileReader::~FileReader() {
-    for(int i=0; i<this->numEntries; i++) {
+    for(int i=0; i<numEntries; i++) {
         //delete (this->entries[i].itemName);
     }
-    delete (this->entries[0].itemName);
-    delete (this->entries[1].itemName);
+
+    //delete (this->entries[0].itemName);
+
+    //cout << "Deleting 1: ";
+    //delete (this->entries[1].itemName);
+
+    //delete (this->entries[2].itemName);
 
     delete[] FileReader::entries;
     close(FileReader::fd);
@@ -84,4 +92,8 @@ int FileReader::getNumEntries() const {
 
 void FileReader::setNumEntries(int numEntries) {
     FileReader::numEntries = numEntries;
+}
+
+EntryInfo *FileReader::getEntries() const {
+    return entries;
 }

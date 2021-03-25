@@ -11,7 +11,7 @@
 struct EntryInfo {
     time_t timestamp;
     int itemID;
-    char* itemName = new char(50);
+    char* itemName;
     int quantity;
     float price;
 };

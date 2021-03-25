@@ -6,35 +6,25 @@
 #include "Part1SimpleFileModifier.h"
 #include "FileModifyException.h"
 #include <iostream>
+#include <vector>
+#include "Util.h"
 
 using namespace std;
 
 void Part1SimpleFileModifier::modifyAndCopyFile(const char *sourceFile, const char *destFile) {
     FileReader fileReader(sourceFile);
-
-//    time_t t;
-//    fileReader.readTime(&t);
-//    cout << t << endl;
-//
-//    int id;
-//    fileReader.readInt(&id);
-//    cout << id << endl;
-//
-//    char* name = new char(50);
-//    fileReader.readString(name);
-//    cout << name << endl;
-//    delete name;
-//
-//    int qty;
-//    fileReader.readInt(&qty);
-//    cout << qty << endl;
-//
-//    float price;
-//    fileReader.readFloat(&price);
-//    cout << price << endl;
     cout << fileReader.getNumEntries() << endl;
     fileReader.populateEntries();
     fileReader.printEntries();
-    fileReader.printEntries();
 
+    EntryInfo* ptr = fileReader.getEntries();
+    cout << ptr[0].quantity;
+    std::vector<EntryInfo> list;
+    cout << "Made the vector";
+    for(int i =0; i<fileReader.getNumEntries(); i++) {
+        list.push_back(ptr[i]);
+    }
+    for(int i=0; i<list.size(); i++) {
+        cout << list.at(i).quantity << ", ";
+    }
 }

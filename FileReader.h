@@ -27,6 +27,8 @@ private:
     int fd;
     int numEntries;
     EntryInfo* entries;
+public:
+    EntryInfo *getEntries() const;
 
 };
 #endif //PROJECTTEMPLATE_FILEREADER_H
