@@ -11,16 +11,17 @@
 #include <cstdio>
 #include "Util.h"
 #include <ctime>
+#include <vector>
 
 using namespace std;
 
 FileReader::FileReader(const char *source) {
     FileReader::fd = open(source, O_RDONLY, S_IRUSR);
     readInt(&(FileReader::numEntries));
-    FileReader::entries = new EntryInfo[numEntries];
+    FileReader::entries = std::vector<EntryInfo>(numEntries);
     //alloc memory to array's structs' char pointers
     for(int i=0; i<numEntries; i++) {
-        this->entries[i].itemName = new char[50];
+        this->entries.at(i).itemName = new char[50];
     }
 }
 
@@ -41,32 +42,30 @@ void FileReader::readFloat(float* buffer) {
 }
 
 void FileReader::populateEntries() {
-    for(int i =0; i <this->numEntries; i++) {
-        this->readTime(&(this->entries[i].timestamp));
-        this->readInt(&(this->entries[i].itemID));
-        this->readString(this->entries[i].itemName);
-        this->readInt(&(this->entries[i].quantity));
-        this->readFloat(&(this->entries[i].price));
+    for(int i =0; i <entries.size(); i++) {
+        this->readTime(&(this->entries.at(i).timestamp));
+        this->readInt(&(this->entries.at(i).itemID));
+        this->readString(this->entries.at(i).itemName);
+        this->readInt(&(this->entries.at(i).quantity));
+        this->readFloat(&(this->entries.at(i).price));
     }
     close(FileReader::fd);
 }
 
 void FileReader::printEntries() {
-    for(int i =0; i<numEntries; i++) {
-        cout << "Time: " << this->entries[i].timestamp;
-        cout << ", ID: " << this->entries[i].itemID;
-        cout << ", Name: " << this->entries[i].itemName;
-        cout << ", Qty: " << this->entries[i].quantity;
-        cout << ", Price: " << this->entries[i].price << endl;
+    for(int i =0; i<entries.size(); i++) {
+        cout << "Time: " << this->entries.at(i).timestamp;
+        cout << ", ID: " << this->entries.at(i).itemID;
+        cout << ", Name: " << this->entries.at(i).itemName;
+        cout << ", Qty: " << this->entries.at(i).quantity;
+        cout << ", Price: " << this->entries.at(i).price << endl;
     }
 }
 
 FileReader::~FileReader() {
-    for(int i=0; i<numEntries; i++) {
-        delete (this->entries[i].itemName);
+    for(int i=0; i<entries.size(); i++) {
+        delete (this->entries.at(i).itemName);
     }
-    delete[] FileReader::entries;
-
 }
 
 int FileReader::getFd() const {
@@ -85,6 +84,7 @@ void FileReader::setNumEntries(int numEntries) {
     FileReader::numEntries = numEntries;
 }
 
-EntryInfo *FileReader::getEntries() const {
+const vector<EntryInfo> &FileReader::getEntries() const {
     return entries;
 }
+

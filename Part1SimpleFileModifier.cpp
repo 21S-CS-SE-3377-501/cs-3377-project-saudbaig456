@@ -19,15 +19,15 @@ void Part1SimpleFileModifier::modifyAndCopyFile(const char *sourceFile, const ch
     fileReader.populateEntries();
     fileReader.printEntries();
 
-    EntryInfo* ptr = fileReader.getEntries();
+    vector<EntryInfo> temp = fileReader.getEntries();
 
     std::vector<EntryInfo> list;
     cout << "Made the vector" << endl;
 
     for(int i =0; i<fileReader.getNumEntries(); i++) {
-        list.push_back(ptr[i]);
+        list.push_back(temp.at(i));
     }
-    //char sobellName[6] = {'S','o','b','e','l','l'};
+
     const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell ";
     EntryInfo sobell = {
             1612195200,
@@ -44,11 +44,11 @@ void Part1SimpleFileModifier::modifyAndCopyFile(const char *sourceFile, const ch
             68,
             89.99
     };
-    list.push_back(sobell);
-    list.push_back(apue);
+    temp.push_back(sobell);
+    temp.push_back(apue);
 
-    for(int i=0; i<list.size(); i++) {
-        cout << list.at(i).itemName << endl;
+    for(int i=0; i<temp.size(); i++) {
+        cout << temp.at(i).itemName << endl;
     }
 
     int writeFd = open(destFile, O_WRONLY | O_CREAT, S_IRWXU);

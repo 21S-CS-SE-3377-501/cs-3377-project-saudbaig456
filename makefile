@@ -7,7 +7,7 @@ clean:
 	rm -f cmake-build-debug/21S_CS3377_Project
 
 compile: main.cpp
-	g++ -I . -pthread -o cmake-build-debug/21S_CS3377_Project main.cpp FileModifierFactory.cpp Part1SimpleFileModifier.cpp Part2MultiProcessModifier.cpp Part3ThreadedModifier.cpp Part4SocketModifier.cpp PipeMaker.cpp Util.cpp FileReader.cpp
+	g++ -I . -pthread -o cmake-build-debug/21S_CS3377_Project main.cpp FileModifierFactory.cpp Part1SimpleFileModifier.cpp Part2MultiProcessModifier.cpp Part3ThreadedModifier.cpp Part4SocketModifier.cpp PipeMaker.cpp Util.cpp FileReader.cpp FileWriter.cpp
 
 testSimple:
 	cd cmake-build-debug && ./21S_CS3377_Project 1

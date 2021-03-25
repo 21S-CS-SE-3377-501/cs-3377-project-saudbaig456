@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <ctime>
 #include "Util.h"
-
+#include <vector>
 class FileReader {
 
 public:
@@ -21,14 +21,17 @@ public:
     void setNumEntries(int numEntries);
     void populateEntries();
     void printEntries();
+    //function to add new entry to backing array
+    void makeEntry();
     ~FileReader();
 
 private:
     int fd;
     int numEntries;
-    EntryInfo* entries;
 public:
-    EntryInfo *getEntries() const;
+    const std::vector<EntryInfo> &getEntries() const;
 
+private:
+    std::vector<EntryInfo> entries;
 };
 #endif //PROJECTTEMPLATE_FILEREADER_H
