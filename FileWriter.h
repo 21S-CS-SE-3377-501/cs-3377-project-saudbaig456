@@ -10,14 +10,17 @@
 #include <vector>
 class FileWriter {
 public:
-    FileWriter(const char *dest);
+    FileWriter(const char *dest, std::vector<EntryInfo> records);
     void writeInt(int *buffer);
     void writeTime(time_t* buffer);
     void writeString(char* buffer);
     void writeFloat(float* buffer);
+    void writeRecords();
     ~FileWriter();
 
 private:
+    int fd;
+    int numEntries;
     std::vector<EntryInfo> records;
 
 };

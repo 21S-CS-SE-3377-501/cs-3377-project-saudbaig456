@@ -3,6 +3,7 @@
 //
 
 #include "FileReader.h"
+#include "FileWriter.h"
 #include "Part1SimpleFileModifier.h"
 #include "FileModifyException.h"
 #include <iostream>
@@ -20,13 +21,15 @@ void Part1SimpleFileModifier::modifyAndCopyFile(const char *sourceFile, const ch
     cout << "The entries before: " << endl;
     fileReader.printEntries();
 
-    //const char* sobellName = new char[50];
+    //add new entries
     const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
     fileReader.makeEntry(1612195200, 4636152, sobellName, 70, 70.99);
     const char* apueName = "Advanced Programming in the UNIX Environment by Stevens and Rago";
     fileReader.makeEntry(1613412000, 6530927, apueName, 68, 89.99);
     cout << "The entries after: " << endl;
     fileReader.printEntries();
-    int writeFd = open(destFile, O_WRONLY | O_CREAT, S_IRWXU);
-    close(writeFd);
+    FileWriter filewriter(destFile, fileReader.getEntries());
+    filewriter.writeRecords();
+
+
 }
