@@ -62,6 +62,22 @@ void FileReader::printEntries() {
     }
 }
 
+void FileReader::makeEntry(time_t time, int id, const char* name, int qty, float price) {
+    EntryInfo entry {
+        time,
+        id,
+        new char[50],
+        qty,
+        price
+    };
+    //deep copy the string ptr
+    for(int i=0; i<49; i++) {
+        entry.itemName[i] = name[i];
+    }
+    entries.push_back(entry);
+    numEntries++;
+}
+
 FileReader::~FileReader() {
     for(int i=0; i<entries.size(); i++) {
         delete (this->entries.at(i).itemName);

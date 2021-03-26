@@ -22,7 +22,7 @@ public:
     void populateEntries();
     void printEntries();
     //function to add new entry to backing array
-    void makeEntry();
+    void makeEntry(time_t time, int id, const char* name, int qty, float price);
     ~FileReader();
 
 private:
