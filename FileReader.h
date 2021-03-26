@@ -21,6 +21,7 @@ public:
     void setNumEntries(int numEntries);
     void populateEntries();
     void printEntries();
+    void handleError(int bytes);
     //function to add new entry to backing array
     void makeEntry(time_t time, int id, const char* name, int qty, float price);
     ~FileReader();

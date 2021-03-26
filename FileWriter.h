@@ -16,6 +16,7 @@ public:
     void writeString(char* buffer);
     void writeFloat(float* buffer);
     void writeRecords();
+    void handleError(int bytes);
     ~FileWriter();
 
 private:

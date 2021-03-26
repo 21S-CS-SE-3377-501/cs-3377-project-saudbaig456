@@ -5,43 +5,60 @@
 #include "FileReader.h"
 #include <iostream>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <cstdio>
 #include "Util.h"
 #include <ctime>
 #include <vector>
+#include "FileModifyException.h"
+#include <cstring>
 
 using namespace std;
 
 FileReader::FileReader(const char *source) {
     FileReader::fd = open(source, O_RDONLY, S_IRUSR);
+    //error check
+    if(fd == -1) {
+        cerr << "Can't open file for reading: " << strerror(errno) << endl;
+        exit(1);
+    }
     readInt(&(FileReader::numEntries));
     FileReader::entries = std::vector<EntryInfo>(numEntries);
-    //alloc memory to array's structs' char pointers
+
+    //alloc memory to vector's structs' char pointers
     for(int i=0; i<numEntries; i++) {
         this->entries.at(i).itemName = new char[50];
     }
 }
 
 void FileReader::readInt(int* buffer) {
-    read(FileReader::fd, buffer, sizeof(int));
+    int bytes = read(FileReader::fd, buffer, sizeof(int));
+    handleError(bytes);
 }
 
 void FileReader::readTime(time_t* buffer) {
-    read(FileReader::fd, buffer, sizeof(time_t));
+    int bytes = read(FileReader::fd, buffer, sizeof(time_t));
+    handleError(bytes);
 }
 
 void FileReader::readString(char* buffer) {
-    read(FileReader::fd, buffer, 50 * sizeof(char));
+    int bytes = read(FileReader::fd, buffer, 50 * sizeof(char));
+    handleError(bytes);
 }
 
 void FileReader::readFloat(float* buffer) {
-    read(FileReader::fd, buffer, sizeof(float));
+    int bytes = read(FileReader::fd, buffer, sizeof(float));
+    handleError(bytes);
+}
+
+void FileReader::handleError(int bytes) {
+    if(bytes == -1) {
+        cerr << "Reading error: " << strerror(errno) << endl;
+        exit(1);
+    }
 }
 
 void FileReader::populateEntries() {
+    //read in entries from the file
     for(int i =0; i <entries.size(); i++) {
         this->readTime(&(this->entries.at(i).timestamp));
         this->readInt(&(this->entries.at(i).itemID));
