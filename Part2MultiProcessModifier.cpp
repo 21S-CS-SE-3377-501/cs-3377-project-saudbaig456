@@ -70,7 +70,7 @@ void Part2MultiProcessModifier::modifyAndCopyFile(const char *sourceFile, const 
     else if(this->ioType == IOType::WRITE) {
         //child process here
         //read from pipe to outfile
-        FileReader reader(this->pipeFd);
+        FileReader reader(STDIN_FILENO);
         reader.populateEntries();
 
         FileWriter writer(destFile, reader.getEntries());
