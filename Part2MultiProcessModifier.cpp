@@ -24,8 +24,7 @@ void Part2MultiProcessModifier::doSetup(IOType ioType) {
     //make the pipe
     PipeMaker filePipe;
 
-    pid_t pid;
-    pid = fork();
+    pid_t pid = fork();
 
     //Handle child and parent processes
     if (pid < 0) {
@@ -34,12 +33,12 @@ void Part2MultiProcessModifier::doSetup(IOType ioType) {
     }
     else if(pid == 0) {
         //we are the child
-        int fd = filePipe.setUpToRead();
+        this->pipeFd = filePipe.setUpToRead();
         execl("./21S_CS3377_Project", "21S_CS3377_Project", "2", "3", nullptr);
     }
     else {
         //we are the parent
-        int fd = filePipe.setUpToWrite();
+        this->pipeFd = filePipe.setUpToWrite();
     }
 
         //setup to write in the parent (gets back fd)
@@ -53,14 +52,29 @@ void Part2MultiProcessModifier::modifyAndCopyFile(const char *sourceFile, const 
     if(this->ioType == IOType::READ) {
         //parent process here
         //read from file to pipe
-        cout << "I am the parent" << endl;
+        FileReader reader(sourceFile);
+        reader.populateEntries();
+        const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
+        reader.makeEntry(1612195200, 4636152, sobellName, 70, 70.99);
+        const char* apueName = "Advanced Programming in the UNIX Environment by Stevens and Rago";
+        reader.makeEntry(1613412000, 6530927, apueName, 68, 89.99);
+
+        //write entries to pipe
+        FileWriter writer(this->pipeFd, reader.getEntries());
+        writer.writeRecords();
         int temp = 0;
         wait(&temp);
+
 
     }
     else if(this->ioType == IOType::WRITE) {
         //child process here
         //read from pipe to outfile
+        FileReader reader(this->pipeFd);
+        reader.populateEntries();
+
+        FileWriter writer(destFile, reader.getEntries());
+        writer.writeRecords();
         cout << "I am the child" << endl;
         exit(0);
     }

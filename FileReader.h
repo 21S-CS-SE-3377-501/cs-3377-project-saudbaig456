@@ -10,6 +10,7 @@
 class FileReader {
 
 public:
+    FileReader(int fd);
     FileReader(const char *source);
     void readInt(int* buffer);
     void readTime(time_t* buffer);

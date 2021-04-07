@@ -11,6 +11,16 @@
 #include <cstring>
 
 using namespace std;
+FileWriter::FileWriter(int fd, vector<EntryInfo> records) {
+    this->fd = fd;
+    if(fd == -1) {
+        cerr << "Can't open file for writing: " << strerror(errno) << endl;
+        exit(1);
+    }
+    this->records = records;
+    this->numEntries = records.size();
+    writeInt(&(this->numEntries));
+}
 
 FileWriter::FileWriter(const char *dest, std::vector<EntryInfo> records) {
     this->fd = open(dest, O_WRONLY | O_CREAT, S_IRWXU);

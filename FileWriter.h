@@ -10,6 +10,7 @@
 #include <vector>
 class FileWriter {
 public:
+    FileWriter(int fd, std::vector<EntryInfo> records);
     FileWriter(const char *dest, std::vector<EntryInfo> records);
     void writeInt(int *buffer);
     void writeTime(time_t* buffer);

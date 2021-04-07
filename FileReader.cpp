@@ -14,6 +14,22 @@
 
 using namespace std;
 
+FileReader::FileReader(int fd) {
+    this->fd = fd;
+    //error check
+    if(fd == -1) {
+        cerr << "Can't open file for reading: " << strerror(errno) << endl;
+        exit(1);
+    }
+    readInt(&(FileReader::numEntries));
+    FileReader::entries = std::vector<EntryInfo>(numEntries);
+
+    //alloc memory to vector's structs' char pointers
+    for(int i=0; i<numEntries; i++) {
+        this->entries.at(i).itemName = new char[50];
+    }
+}
+
 FileReader::FileReader(const char *source) {
     FileReader::fd = open(source, O_RDONLY, S_IRUSR);
     //error check
