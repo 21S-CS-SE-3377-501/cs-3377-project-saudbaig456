@@ -75,7 +75,6 @@ void Part2MultiProcessModifier::modifyAndCopyFile(const char *sourceFile, const 
 
         FileWriter writer(destFile, reader.getEntries());
         writer.writeRecords();
-        cout << "I am the child" << endl;
         exit(0);
     }
 }
