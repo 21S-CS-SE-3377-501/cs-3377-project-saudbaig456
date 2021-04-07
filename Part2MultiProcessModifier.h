@@ -15,6 +15,7 @@ public:
                            const char* destFile) override;
 
 private:
+    IOType ioType;
 };
 
 
