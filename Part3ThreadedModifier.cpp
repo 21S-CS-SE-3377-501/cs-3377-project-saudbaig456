@@ -8,6 +8,8 @@
 #include "FileReader.h"
 #include "FileWriter.h"
 #include <pthread.h>
+#include "Util.h"
+#include <vector>
 
 using namespace std;
 
@@ -29,23 +31,43 @@ void Part3ThreadedModifier::modifyAndCopyFile(const char *sourceFile, const char
    //create thread with threadEntry
    //make the thread an pass start function
    pthread_t outputThreadID;
-   pthread_create(&outputThreadID, nullptr, Part3ThreadedModifier::threadEntry, nullptr);
+   pthread_create(&outputThreadID, nullptr, threadEntry, nullptr);
 
    //main thread waits on condition: unlocks the mutex while waiting
-   //pthread_cond_wait(&condition, &mutex);
+   cout << "Continuing to wait ..." << endl;
+   pthread_cond_wait(&condition, &mutex);
 
-   //set infoBetweenThreads to next entry
+    //set infoBetweenThreads to next entry
+//    FileReader fileReader(sourceFile);
+//    fileReader.populateEntries();
+//    //add new entries
+//    const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
+//    fileReader.makeEntry(1612195200, 4636152, sobellName, 70, 70.99);
+//    const char* apueName = "Advanced Programming in the UNIX Environment by Stevens and Rago";
+//    fileReader.makeEntry(1613412000, 6530927, apueName, 68, 89.99);
+//    vector<EntryInfo> entries = fileReader.getEntries();
+//
+//    //entry ready this will be a loop
+//    this->infoBetweenThreads = entries.at(0);
+    //signal
+    //pthread_cond_signal(&condition);
 
-   //singal that we are ready for a read
+
+    //unlock and rejoin
+    cout << "Back to main thread " << endl;
+    pthread_mutex_unlock(&mutex);
+    pthread_join(outputThreadID, nullptr);
+
+   //signal that we are ready for a read
 
 }
 
 // Use this as the starting point for the thread you create
 void *Part3ThreadedModifier::threadEntry(void* arg) noexcept {
     //converts arg to pointer
-    //Part3ThreadedModifier* modifier = (Part3ThreadedModifier*) arg;
-    try{
-       // modifier->outputThreadMethod();
+    Part3ThreadedModifier* modifier = (Part3ThreadedModifier*) arg;
+    try {
+       modifier->outputThreadMethod();
     } catch (FileModifyException e) {
         cerr << "Receiving thread failed: " << e.what() << endl;
         exit(1);
@@ -61,17 +83,22 @@ void *Part3ThreadedModifier::threadEntry(void* arg) noexcept {
 
 void Part3ThreadedModifier::outputThreadMethod() {
     //lock the mutex here
-    //pthread_mutex_lock(&mutex);
+    cout << "Locking NOW" << endl;
+    pthread_mutex_lock(&mutex);
     //signal the condition
-    //pthread_cond_signal(&condition);
+    cout << "Signaling NOW" << endl;
+    pthread_cond_signal(&condition);
     //now wait on entryInfo condition
+    //FileWriter fileWriter();
     //pthread_cond_wait(&condition, &mutex);
+    //save entry and unlock
+    //pthread_mutex_unlock(&mutex);
+    //write file
 
 }
 
 Part3ThreadedModifier::~Part3ThreadedModifier() noexcept {
-    // TODO: clean up your condition and mutex
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&condition);
+    //pthread_mutex_destroy(&mutex);
+    //pthread_cond_destroy(&condition);
 
 }
