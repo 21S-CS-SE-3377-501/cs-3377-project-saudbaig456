@@ -31,7 +31,9 @@ void Part3ThreadedModifier::modifyAndCopyFile(const char *sourceFile, const char
    //create thread with threadEntry
    //make the thread an pass start function
    pthread_t outputThreadID;
-   pthread_create(&outputThreadID, nullptr, threadEntry, nullptr);
+
+   //figure out which arg to pass
+   pthread_create(&outputThreadID, nullptr, threadEntry, this);
 
    //main thread waits on condition: unlocks the mutex while waiting
    cout << "Continuing to wait ..." << endl;
@@ -50,7 +52,7 @@ void Part3ThreadedModifier::modifyAndCopyFile(const char *sourceFile, const char
 //    //entry ready this will be a loop
 //    this->infoBetweenThreads = entries.at(0);
     //signal
-    //pthread_cond_signal(&condition);
+    pthread_cond_signal(&condition);
 
 
     //unlock and rejoin
@@ -89,10 +91,10 @@ void Part3ThreadedModifier::outputThreadMethod() {
     cout << "Signaling NOW" << endl;
     pthread_cond_signal(&condition);
     //now wait on entryInfo condition
-    //FileWriter fileWriter();
-    //pthread_cond_wait(&condition, &mutex);
+    FileWriter fileWriter();
+    pthread_cond_wait(&condition, &mutex);
     //save entry and unlock
-    //pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
     //write file
 
 }
