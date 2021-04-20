@@ -25,9 +25,7 @@ void Part3ThreadedModifier::modifyAndCopyFile(const char *sourceFile, const char
    this->destFile = destFile;
 
    //Read the data and pass to write thread
-   cout << "Reading input" << endl;
    pthread_mutex_lock(&mutex);
-   cout << "Creating thread" << endl;
    //create thread with threadEntry
    //make the thread an pass start function
    pthread_t outputThreadID;
@@ -36,23 +34,25 @@ void Part3ThreadedModifier::modifyAndCopyFile(const char *sourceFile, const char
    pthread_create(&outputThreadID, nullptr, threadEntry, this);
 
    //main thread waits on condition: unlocks the mutex while waiting
-   cout << "Continuing to wait ..." << endl;
    pthread_cond_wait(&condition, &mutex);
 
     //set infoBetweenThreads to next entry
-//    FileReader fileReader(sourceFile);
-//    fileReader.populateEntries();
-//    //add new entries
-//    const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
-//    fileReader.makeEntry(1612195200, 4636152, sobellName, 70, 70.99);
-//    const char* apueName = "Advanced Programming in the UNIX Environment by Stevens and Rago";
-//    fileReader.makeEntry(1613412000, 6530927, apueName, 68, 89.99);
-//    vector<EntryInfo> entries = fileReader.getEntries();
-//
-//    //entry ready this will be a loop
-//    this->infoBetweenThreads = entries.at(0);
-    //signal
-    pthread_cond_signal(&condition);
+    FileReader fileReader(sourceFile);
+    fileReader.populateEntries();
+    //add new entries
+    const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
+    fileReader.makeEntry(1612195200, 4636152, sobellName, 70, 70.99);
+    const char* apueName = "Advanced Programming in the UNIX Environment by Stevens and Rago";
+    fileReader.makeEntry(1613412000, 6530927, apueName, 68, 89.99);
+    vector<EntryInfo> entries = fileReader.getEntries();
+
+    //entry ready this will be a loop
+    for(int i=0; i<entries.size(); i++) {
+        cout << entries.at(i).itemName << endl;
+        this->infoBetweenThreads = entries.at(i);
+        pthread_cond_signal(&condition);
+    }
+
 
 
     //unlock and rejoin
@@ -91,16 +91,22 @@ void Part3ThreadedModifier::outputThreadMethod() {
     cout << "Signaling NOW" << endl;
     pthread_cond_signal(&condition);
     //now wait on entryInfo condition
-    FileWriter fileWriter();
-    pthread_cond_wait(&condition, &mutex);
+    FileWriter fileWriter(this->destFile);
+
+    for(int i=0; i<2; i++) {
+        pthread_cond_wait(&condition, &mutex);
+        fileWriter.writeRecord(this->infoBetweenThreads);
+    }
     //save entry and unlock
+
+    cout << "Unlocked the mutex" << endl;
     pthread_mutex_unlock(&mutex);
     //write file
 
 }
 
 Part3ThreadedModifier::~Part3ThreadedModifier() noexcept {
-    //pthread_mutex_destroy(&mutex);
-    //pthread_cond_destroy(&condition);
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&condition);
 
 }
