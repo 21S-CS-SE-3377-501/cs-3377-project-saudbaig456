@@ -16,6 +16,13 @@ public:
     ~Part3ThreadedModifier() noexcept;
 private:
     static void* threadEntry(void* arg) noexcept;
+    int numItems;
+    void outputThreadMethod();
+    pthread_mutex_t mutex;
+    pthread_cond_t condition;
+    EntryInfo infoBetweenThreads;
+    const char* destFile;
+
 };
 
 

@@ -10,6 +10,7 @@
 #include <vector>
 class FileWriter {
 public:
+    FileWriter(const char* dest);
     FileWriter(int fd, std::vector<EntryInfo> records);
     FileWriter(const char *dest, std::vector<EntryInfo> records);
     void writeInt(int *buffer);
@@ -18,6 +19,7 @@ public:
     void writeFloat(float* buffer);
     void writeRecords();
     void handleError(int bytes);
+    void writeRecord(EntryInfo entry);
     ~FileWriter();
 
 private:

@@ -34,6 +34,17 @@ FileWriter::FileWriter(const char *dest, std::vector<EntryInfo> records) {
     writeInt(&(this->numEntries));
 }
 
+FileWriter::FileWriter(const char *dest) {
+    this->fd = open(dest, O_WRONLY | O_CREAT, S_IRWXU);
+    //error check
+    if(fd == -1) {
+        cerr << "Can't open file for writing: " << strerror(errno) << endl;
+        exit(1);
+    }
+    this->numEntries = 7;
+    writeInt(&(this->numEntries));
+}
+
 void FileWriter::writeInt(int *buffer) {
     int bytes = write(this->fd, buffer, sizeof(int));
     handleError(bytes);
@@ -77,5 +88,13 @@ void FileWriter::handleError(int bytes) {
 
 FileWriter::~FileWriter() {
 
+}
+
+void FileWriter::writeRecord(EntryInfo entry) {
+    writeTime(&(entry.timestamp));
+    writeInt(&(entry.itemID));
+    writeString(entry.itemName);
+    writeInt(&(entry.quantity));
+    writeFloat(&(entry.price));
 }
 
