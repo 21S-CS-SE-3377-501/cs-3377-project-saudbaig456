@@ -21,11 +21,9 @@ Part4SocketModifier::~Part4SocketModifier() {
 
 void Part4SocketModifier::doSetup(IOType ioType) {
     //parent is client
-    std::cout << "In Part 4: " << std::endl;
     //child is server
     this->ioType = ioType;
     if(ioType == IOType::WRITE) {
-        std::cout << "Child setup" << std::endl;
         //we are the child setup to listen
         //socket, bind, listen
         int server_fd, new_socket;
