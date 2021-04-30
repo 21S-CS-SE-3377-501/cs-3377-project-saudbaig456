@@ -11,6 +11,8 @@
 #include "FileReader.h"
 #include <sys/wait.h>
 #include "Util.h"
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 
 Part4SocketModifier::~Part4SocketModifier() {
@@ -19,13 +21,41 @@ Part4SocketModifier::~Part4SocketModifier() {
 
 void Part4SocketModifier::doSetup(IOType ioType) {
     //Change code to do socket stuff
+    //parent is client
+    //child is server
     this->ioType = ioType;
     if(ioType == IOType::WRITE) {
-        //we are the child nothing to do here
+        //we are the child setup to listen
+        //socket, bind, listen
+        int server_fd, new_socket;
+        struct sockaddr_in address;
+        int addrlen = sizeof(address);
+
+        if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        {
+            std::cout << "Socket failed" << std::endl;
+        }
+
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = INADDR_ANY;
+        address.sin_port = htons(Util::portNumber);
+
+        if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
+            std::cout << "Bind Failed" << std::endl;
+        }
+
+        if (listen(server_fd, 3) < 0) {
+            std::cout << "Listen error" << std::endl;
+        }
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*) &addrlen)) <0) {
+            std::cout << "Accept Error" << std::endl;
+        }
+
+        this->socketFd = new_socket;
+
         return;
     }
-    //make the pipe
-    PipeMaker filePipe;
+
 
     pid_t pid = fork();
 
@@ -36,25 +66,47 @@ void Part4SocketModifier::doSetup(IOType ioType) {
     }
     else if(pid == 0) {
         //we are the child
-        this->pipeFd = filePipe.setUpToRead();
-        //change to the pipe child args
-        execl("./21S_CS3377_Project", "21S_CS3377_Project", "2", "3", nullptr);
+        execl("./21S_CS3377_Project", "21S_CS3377_Project", "4", "3", nullptr);
     }
     else {
         //we are the parent
-        this->pipeFd = filePipe.setUpToWrite();
+        //setup to write
+        int fileDescriptor = 0;
+        struct sockaddr_in serverAddress;
+        if (fileDescriptor = socket(AF_INET, SOCK_STREAM, 0) <0) {
+            std::cout << "Socket creation error "<< std::endl;
+        }
+        //save this off to write to later
+        this->socketFd = fileDescriptor;
+
+        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_port = htons(Util::portNumber);
+
+        if(inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr) <=0)
+        {
+            std::cout << "Invalid address" << std::endl;
+        }
+
+        int amountToWait = 1;
+        while (connect(fileDescriptor, (struct sockaddr*) &serverAddress, sizeof(serverAddress))) {
+            if ( errno != ECONNREFUSED) {
+                // Something unexpected happened
+                throw FileModifyException("Error connecting");
+            }
+            std::cout << "Not ready to connect yet..." << std::endl;
+
+            // Exponential backoff
+            sleep(amountToWait);
+            amountToWait = amountToWait * 2;
+        }
     }
 
-    //setup to write in the parent (gets back fd)
-    //execl for the child
-
-    //figure out if we are child or parent
 }
 
 void Part4SocketModifier::modifyAndCopyFile(const char *sourceFile, const char *destFile) {
     if(this->ioType == IOType::READ) {
         //parent process here
-        //read from file to pipe
+        //read from file to socket
         FileReader reader(sourceFile);
         reader.populateEntries();
         const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
@@ -62,8 +114,8 @@ void Part4SocketModifier::modifyAndCopyFile(const char *sourceFile, const char *
         const char* apueName = "Advanced Programming in the UNIX Environment by Stevens and Rago";
         reader.makeEntry(1613412000, 6530927, apueName, 68, 89.99);
 
-        //write entries to pipe
-        FileWriter writer(this->pipeFd, reader.getEntries());
+        //write entries to socket
+        FileWriter writer(this->socketFd, reader.getEntries());
         writer.writeRecords();
         int temp = 0;
         wait(&temp);
@@ -72,8 +124,8 @@ void Part4SocketModifier::modifyAndCopyFile(const char *sourceFile, const char *
     }
     else if(this->ioType == IOType::WRITE) {
         //child process here
-        //read from pipe to outfile
-        FileReader reader(STDIN_FILENO);
+        //read from socket to outfile
+        FileReader reader(this->socketFd);
         reader.populateEntries();
 
         FileWriter writer(destFile, reader.getEntries());
