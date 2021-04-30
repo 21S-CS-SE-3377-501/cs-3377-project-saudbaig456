@@ -20,11 +20,12 @@ Part4SocketModifier::~Part4SocketModifier() {
 }
 
 void Part4SocketModifier::doSetup(IOType ioType) {
-    //Change code to do socket stuff
     //parent is client
+    std::cout << "In Part 4: " << std::endl;
     //child is server
     this->ioType = ioType;
     if(ioType == IOType::WRITE) {
+        std::cout << "Child setup" << std::endl;
         //we are the child setup to listen
         //socket, bind, listen
         int server_fd, new_socket;
@@ -40,7 +41,8 @@ void Part4SocketModifier::doSetup(IOType ioType) {
         address.sin_addr.s_addr = INADDR_ANY;
         address.sin_port = htons(Util::portNumber);
 
-        if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
+        if (bind(server_fd, (struct sockaddr*) &address, sizeof(address))<0) {
+            std::cerr << strerror(errno) << std::endl;
             std::cout << "Bind Failed" << std::endl;
         }
 
@@ -73,7 +75,7 @@ void Part4SocketModifier::doSetup(IOType ioType) {
         //setup to write
         int fileDescriptor = 0;
         struct sockaddr_in serverAddress;
-        if (fileDescriptor = socket(AF_INET, SOCK_STREAM, 0) <0) {
+        if ((fileDescriptor = socket(AF_INET, SOCK_STREAM, 0)) <0) {
             std::cout << "Socket creation error "<< std::endl;
         }
         //save this off to write to later
@@ -91,6 +93,7 @@ void Part4SocketModifier::doSetup(IOType ioType) {
         while (connect(fileDescriptor, (struct sockaddr*) &serverAddress, sizeof(serverAddress))) {
             if ( errno != ECONNREFUSED) {
                 // Something unexpected happened
+                std::cerr << strerror(errno) << std::endl;
                 throw FileModifyException("Error connecting");
             }
             std::cout << "Not ready to connect yet..." << std::endl;
@@ -106,7 +109,7 @@ void Part4SocketModifier::doSetup(IOType ioType) {
 void Part4SocketModifier::modifyAndCopyFile(const char *sourceFile, const char *destFile) {
     if(this->ioType == IOType::READ) {
         //parent process here
-        //read from file to socket
+        //read from file, write to socket
         FileReader reader(sourceFile);
         reader.populateEntries();
         const char* sobellName = "A Programming Guide to Linux Commands, Editors, and Shell Programming by Sobell";
