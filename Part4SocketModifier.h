@@ -14,6 +14,8 @@ public:
     void doSetup(IOType ioType) override;
     void modifyAndCopyFile(const char* sourceFile,
                            const char* destFile) override;
+    IOType ioType;
+    int socketFd;
 private:
 };
 
